@@ -1,0 +1,195 @@
+#include <iomanip>
+#include <iostream>
+
+using namespace std;
+
+//-----------------------------------------------------------
+double findMean(double amounts[]);
+
+double findMedian(double amounts[], double sortedAmounts[]);
+
+void checkResults(double amounts[], double sortedAmounts[], string results[]);
+
+void sortMonths(string months[], double amounts[]);
+
+void sortAmounts(double amounts[], double sortedAmounts[]);
+
+void printTable(string months[], double amounts[], double sortedAmounts[]);
+
+void modifyAmounts(double amounts[], string months[]);
+//-----------------------------------------------------------
+int main() {
+	// Array with Months
+	string months[12] = {"January",
+						 "February",
+						 "March",
+						 "April",
+						 "May",
+						 "June",
+						 "July",
+						 "August",
+						 "September",
+						 "October",
+						 "November",
+						 "December"};
+
+	// Array with doubles
+	double amounts[12] = {76321.56,
+						  62912.84,
+						  55986.54,
+						  65535.35,
+						  34794.75,
+						  12345.67,
+						  98765.43,
+						  45481.25,
+						  83289.63,
+						  48736.29,
+						  50901.39,
+						  47580.26};
+
+	double sortedAmounts[12] = {};
+
+	// While loop for user menu
+	bool menu = true;
+	char input;
+	while (menu == true) {
+		cout << "\nPlease enter your choice.\n\n"
+			 << "To add an item: type A\n"
+			 << "To print the data: type P\n"
+			 << "To exit: type E\n\n";
+
+		input = cin.get();
+
+		// Checks response and executes action
+		if (input == 'A' || input == 'a') {
+			modifyAmounts(amounts, months);
+			cout << "\nTry checking the data.\n" << endl;
+		} else if (input == 'P' || input == 'p') {
+			sortAmounts(amounts, sortedAmounts);
+			printTable(months, amounts, sortedAmounts);
+			cout << "\nBye!" << endl;
+			// menu = false;
+		} else if (input == 'E' || input == 'e') {
+			cout << "\n\nHave a nice day!\n" << endl;
+			abort();
+		} else {
+			cout << "\n\nInput is not accepted.\n";
+		}
+		cin.clear();
+		cin.ignore(100, '\n');
+	}
+	return 0;
+}
+
+//--------------------------------------------------------------------------
+double findMean(double amounts[]) {
+	double mean = 0;
+	// For loop to find mean
+	for (size_t i = 0; i < 12; ++i) {
+		mean += amounts[i];
+	}
+	mean /= 12; // finds mean
+
+	return mean;
+}
+
+double findMedian(double amounts[], double sortedAmounts[]) {
+	double median = 0;
+	median = (sortedAmounts[5] + sortedAmounts[6]) / 2;
+
+	return median;
+}
+
+void checkResults(double amounts[], double sortedAmounts[], string results[]) {
+	results[11] = "Outstanding Sales";
+	results[10] = "Outstanding Sales";
+	results[9] = "Outstanding Sales";
+	double mn = findMean(amounts);
+	for (size_t m = 0; m < 12; ++m) {
+		if (amounts[m] > mn && amounts[m] < sortedAmounts[9]) {
+			results[m] = "Above Average Sales";
+		}
+	}
+}
+
+void sortMonths(string months[], double amounts[]) {
+	int n = 12;
+
+	// Sort Total Sales
+	for (size_t i = 0; i < n - 1; i++) {
+		for (size_t j = 0; j < n - i - 1; j++) {
+			if (amounts[j] > amounts[j + 1]) {
+				swap(amounts[j], amounts[j + 1]);
+				swap(months[j], months[j + 1]);
+			}
+		}
+	}
+}
+
+void sortAmounts(double amounts[], double sortedAmounts[]) {
+	// Sorts array
+	for (size_t i = 0; i < 12; ++i) {
+		sortedAmounts[i] = amounts[i];
+	}
+	int i, j;
+	int n = 12;
+	// Loop to sort array
+	for (i = 0; i < n - 1; i++) {
+		for (j = 0; j < n - i - 1; j++) {
+			if (sortedAmounts[j] > sortedAmounts[j + 1]) {
+				swap(sortedAmounts[j], sortedAmounts[j + 1]);
+			}
+		}
+	}
+}
+
+void printTable(string months[], double amounts[], double sortedAmounts[]) {
+	string temp1 = "@";
+
+	string results[12];
+	sortMonths(months, amounts);
+	checkResults(amounts, sortedAmounts, results);
+
+	// For loop to print table
+	cout << "\n\nWelcome to Results by !\n"
+		 << endl
+		 << "\nMonth" << setw(20) << "Total Sales" << setw(20) << "Results"
+		 << endl;
+	for (size_t i = 0; i < 12; ++i) {
+		temp1 = months[i];
+		cout << months[i] << setw(25 - temp1.size()) << setprecision(2) << fixed
+			 << amounts[i] << setw(25) << results[i] << endl;
+	}
+	cout << "\n\nThe mean is $" << setprecision(2) << fixed << findMean(amounts)
+		 << ", and the median is $" << findMedian(amounts, sortedAmounts) << "."
+		 << endl;
+}
+
+void modifyAmounts(double amounts[], string months[]) {
+	int t = 1;
+	string tempMonth;
+	double salesAmt = 0;
+
+	while (t == 1) {
+		cout << "\n\nPlease enter the number of the month and sales amount you "
+				"want to modify. \nE.g. January 12345.67\n"
+			 << endl;
+		cin >> tempMonth >> salesAmt;
+		// cout << tempMonth << endl << setprecision(2) << salesAmt;
+
+		bool valid = false;
+		for (size_t i = 0; i < 12; ++i) {
+			if (tempMonth == months[i]) {
+				valid = true;
+				amounts[i] = salesAmt;
+				break;
+			}
+		}
+		if (valid == true) {
+			t = 0;
+
+		} else {
+			cout << "\nInput not accepted. Please try again" << endl;
+		}
+	}
+}
