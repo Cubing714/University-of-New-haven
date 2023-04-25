@@ -1,0 +1,41 @@
+//main.cpp
+
+#include <iostream>
+#include <iomanip>
+
+using namespace std;
+
+#define AE 0x0E00
+#define BE 0x000F
+#define CE 0x7800
+#define DE 0x00E0
+
+unsigned short decrypt(unsigned short n);
+
+int main(){
+
+  short input;
+  unsigned short crypt;
+  cout << "Enter a short number to decrypt: ";
+  cin >> input;
+  crypt = decrypt( (unsigned short) input);
+
+  cout << "The input number in base 10 is: " << input << "\n"
+       << "The input number in base 16 is: " << hex << input 
+       << "\n\n"
+       << "The decrypted number in base 10 is: " << dec << crypt
+       << "\n"
+       << "The decrypted number in base 16 is: " << hex << crypt;
+  
+}
+
+unsigned short decrypt(unsigned short n){
+
+  unsigned short a, b, c, d;
+  a = (n & AE) << 4;
+  b = (n & BE) << 8;
+  c = (n & CE) >> 8;
+  d = (n & DE) >> 5;
+  return a | b | c | d;
+  
+}
