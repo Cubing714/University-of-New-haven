@@ -1,0 +1,74 @@
+//main.cpp
+
+#include "tools.hpp"
+
+int main(){
+
+  //Variables
+  const string menu = "\n1. Print data\n2. Add new data \nChoose -1 to exit \nPlease enter your choice (1 or 2 or -1): ";
+  int menuChoice = 0;
+
+  
+  welcome("Welcome to Tools Module by Eric Garcia.");
+  menuChoice = chooseMenu(menu, 2);
+  cout << "\nYou chose " << menuChoice << endl;
+  bye();
+
+  return 0;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------
+//tools.hpp
+
+#include <iostream>
+#include <stdlib.h>
+
+using namespace std;
+
+//Prototypes
+void welcome(string s);
+
+void bye();
+
+int chooseMenu(string s, int num);
+
+//------------------------------------------------------------------------------------------------------------------------
+//tools.cpp
+
+#include "tools.hpp"
+
+void welcome(string s){
+  cout << s << "\n" <<endl;
+}
+
+void bye(){
+  cout << "Have a nice day!" << endl;
+  exit(0);
+}
+
+int chooseMenu(string s, int num){
+
+  bool valid = true;
+  int input = 0;
+  while (valid == true){
+    cout << s;
+    cin >> input;
+    
+    //Validation
+    if (input == 1){
+
+      
+    }else if (input == 2){
+
+     
+    }else if(input < -1 || input > num){
+      cout << "\nInput not accepted. Please try again\n"
+           << endl;
+    }else if (input == -1){
+      valid = false;
+    }
+    cin.clear();
+    cin.ignore(100, '\n');
+  }
+  return input;
+}
