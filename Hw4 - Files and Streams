@@ -1,0 +1,118 @@
+//main.cpp
+
+#include <cmath>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#define INF "mydata.txt"
+#define OUTF "output.txt"
+
+using namespace std;
+
+void math(double arr[], int n, ofstream &outFile);
+
+int main() {
+	ifstream dataFile(INF);
+	ofstream outFile(OUTF);
+	if (!dataFile) {
+		cerr << "Can't open " << INF << " for input" << endl;
+		exit(1);
+	} else if (!outFile) {
+		cerr << "Can't open " << OUTF << " for output" << endl;
+		exit(1);
+	}
+
+	double num[35] = {};
+	int n = 0; // Number of values read from file
+
+	// Loop to take each value from mydata.txt and put it into an array
+	for (size_t i = 1; !dataFile.eof(); ++i) {
+		dataFile >> num[i - 1];
+		cout << num[i - 1] << endl;
+		n += 1;
+	}
+	cout << "Values from mydata.txt\n" << endl;
+	for (size_t i = 0; i < n; ++i) {
+		cout << fixed << setprecision(3) << num[n - i - 1] << endl;
+		outFile << num[n - i - 1] << endl;
+	}
+
+	// math(num, n, outFile);
+
+	dataFile.close();
+	outFile.close();
+
+	return 0;
+}
+
+void math(double arr[], int n, ofstream &outFile) {
+	long double answer = 100000.00;
+	double rem;
+
+	cout << endl;
+	for (size_t i = 0; i < n - 1; i += 2) {
+		cout << fixed << "\n\nMultiplication: " << answer << " * " << arr[i];
+		outFile << fixed << "\n\nMultiplication: " << answer << " * " << arr[i];
+		//-------------------
+		answer = answer * arr[i];
+		cout << fixed << " = " << answer << endl;
+		outFile << fixed << " = " << answer << endl;
+		//-------------------
+		if (rem != 0) {
+			// Finds the remainder
+			rem = answer;
+			while (rem >= arr[i + 1]) {
+				rem -= arr[i + 1];
+			}
+			cout << fixed << "Division by remainder: " << answer << " / "
+				 << rem;
+			outFile << fixed << "Division by remainder: " << answer << " / "
+					<< rem;
+			answer = answer / rem;
+			cout << " = " << answer << endl;
+			outFile << " = " << answer << endl;
+		}
+	}
+	cout << "\n\nFinal answer: " << answer << endl;
+	outFile << "\n\nFinal answer: " << answer << endl;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+//mydata.txt
+
+24.750
+89.450
+98.520
+523.654
+79768.300
+2692.567
+6786543.700
+4263.970
+95720.280
+36591.300
+63.970
+9511.500
+12792.500
+441.829
+12.390
+5974.172
+
+//-------------------------------------------------------------------------------------------------------------------
+//output.txt
+
+5974.17
+12.39
+441.829
+12792.5
+9511.5
+63.97
+36591.3
+95720.3
+4263.97
+6.78654e+06
+2692.57
+79768.3
+523.654
+98.52
+89.45
+24.75
