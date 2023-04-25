@@ -1,0 +1,172 @@
+//main.cpp
+
+#include "tools.hpp"
+
+
+int main(){
+
+  //Variables
+  const string menu = "\n1. Choose a letter\n2. Match a word\n3. Replace a letter\n4. Print the words\nChoose -1 to exit \nPlease enter your choice (1, 2, 3, 4, or -1): ";
+  int menuChoice = 0;
+  string words[10] = {};
+  
+  welcome("Welcome to Word Search by Eric Garcia.");
+  getWords(words);
+  
+  menuChoice = chooseMenu(menu, words, 4);
+  cout << "\nYou chose " << menuChoice << endl;
+  bye();
+
+  return 0;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------
+//tools.hpp
+
+#include <iostream>
+#include <stdlib.h>
+#include <iomanip>
+#define MAX 10
+
+using namespace std;
+
+//Prototypes
+void welcome(string s);
+
+void bye();
+
+int chooseMenu(string s, string arr[], int num);
+
+void getWords(string arr[]);
+
+void findChar(string arr[]);
+
+void matchWord(string arr[]);
+
+void replaceChar(string arr[]);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//tools.cpp
+
+#include "tools.hpp"
+
+void welcome(string s){
+  cout << s << "\n" <<endl;
+}
+
+void bye(){
+  cout << "Have a nice day!" << endl;
+  exit(0);
+}
+
+int chooseMenu(string s, string arr[], int num){
+
+  bool valid = true;
+  int input = 0;
+  while (valid == true){
+    cout << s;
+    cin >> input;
+    
+    //Validation
+    if (input == 1){
+      findChar(arr);
+    }else if (input == 2){
+      matchWord(arr);
+    }else if(input == 3){
+      replaceChar(arr);
+    }else if(input == 4){
+      cout << "\n";
+      for(size_t i = 0; i < MAX; ++i){
+        cout << arr[i] << endl;
+      }
+    }else if(input < -1 || input > num){
+      cout << "\nInput not accepted. Please try again\n"
+           << endl;
+    }else if (input == -1){
+      valid = false;
+    }
+    cin.clear();
+    cin.ignore(100, '\n');
+  }
+  return input;
+}
+
+void getWords(string arr[]){
+  //Adds 10 words to the array
+  cout << "Please enter 10 words\n" << endl;
+  for(size_t i = 0; i < MAX; ++i){
+    cin >> arr[i];
+  }
+}
+
+void findChar(string arr[]){
+  char ch;
+  cout << "\nPlease choose a letter" << endl;
+  cin >> ch;
+  cout << "\nWord" << setw(10) << "Indices" << endl
+       << "----" << setw(10) << "-------" << endl;
+  //Loop to print table and find indecies
+  for(size_t i = 0; i < MAX; ++i){
+    cout << arr[i] << setw(10 - arr[i].size());
+    size_t p = 0;
+    for(size_t j = 0; j < arr[i].size(); ++j){
+      p = arr[i].find_first_of(ch, j);
+      if(p == j){
+        cout << j << ", ";
+      }
+    }
+    cout << "\n";
+  }
+  cout << "\nPlease press enter to go back to the menu." << endl;
+  cin.clear();
+  cin.ignore(10, '\n');
+}
+
+void matchWord(string arr[]){ 
+  //Matches the input to an element in the array
+  string s;
+  cout << "\nPlease enter a word." << endl;
+  cin >> s;
+  for(size_t i = 0; i < MAX; ++i){
+    if(s == arr[i]){
+      cout << "\nThe word " << s 
+           << " is in the list, it is at index " << i << "\n" << endl;
+      break;
+    }else if(i == MAX - 1 && s != arr[i]){
+      cout << "\nThe word " << s << " is not in the list.\n" << endl;
+    }
+  }
+  cout << "\nPlease press enter to go back to the menu." << endl;
+  cin.clear();
+  cin.ignore(100, '\n');
+}
+
+void replaceChar(string arr[]){
+  char ch1;
+  char ch2;
+  
+  cout << "\nPlease enter a letter to replace: ";
+  cin >> ch1;
+  cin.clear();
+  cin.ignore(10, '\n');
+  cout << "\nPlease enter a letter replace it with: ";
+  cin >> ch2;
+  cin.clear();
+  cin.ignore(10, '\n');
+  //Loop to go through array and change character
+  for(size_t i = 0; i < MAX; ++i){
+    size_t p = 0;
+    for(size_t j = 0; j < arr[i].size(); ++j){
+      p = arr[i].find_first_of(ch1, p);
+      if(p >= arr[i].size()){
+        break;
+      }
+      arr[i][p] = ch2;
+    }
+  }
+  cout << "\n";
+  for(size_t i = 0; i < MAX; ++i){
+    cout << arr[i] << endl;
+  }
+  cout << "\nPlease press enter to go back to the menu." << endl;
+}
