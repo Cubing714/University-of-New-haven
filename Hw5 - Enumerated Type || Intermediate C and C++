@@ -1,0 +1,91 @@
+//main.cpp
+
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <vector>
+#include <string>
+#define INF "input.txt"
+
+using namespace std;
+
+int main(){
+
+  cout << "Welcome to Enumerated Types by Eric Garcia\n" << endl;
+  
+  //Opening input file
+  ifstream dataFile(INF);
+  if(!dataFile){
+    cerr << "Can't open " << INF << " for input" << endl;  
+    exit(1);
+  }
+
+  enum check {ISNUMBER, ISLETTER, ISSYMBOL, ISWHITESPACE};
+  
+  vector<int> numbers;
+  vector<char> letters;
+  vector<char> symbols;
+
+
+  //Loop to read data and put it into vectors
+  for(size_t i = 0; !dataFile.eof(); ++i){
+    //Reads input.txt and assigns it to input 
+    char input;
+    check data;
+    input = dataFile.get();
+
+    //Assigns the enum check a value based on what the input is and assigns it to the right vector
+    if(isdigit(input)){
+      data = ISNUMBER;
+    }
+    else if(isalpha(input)){
+      data = ISLETTER;
+    }
+    else if(isspace(input)){
+      data = ISWHITESPACE; 
+    }
+    else {
+      data = ISSYMBOL;
+    }
+    
+    //Prints out a statement dependent on what the enum data is
+    if(data == ISNUMBER){
+      cout << "A number was read: " << input << endl;
+      input = (int)input; //makes input an integer
+      input -= 48; //gets the correct value of the integer 
+      numbers.push_back(input);
+    }
+    else if(data == ISLETTER){
+      cout << "A letter was read: " << input << endl;
+      letters.push_back(input);
+    }
+    else if(data == ISSYMBOL){
+      cout << "A symbol was read: " << input << endl;
+      symbols.push_back(input);
+    }
+  }
+
+  //Loops to print table
+  cout << "\n\nThe Numbers are: ";
+  for(size_t i = 0; i < numbers.size(); ++i){
+    cout << numbers[i] << ", ";
+  }
+  cout << "\n\nThe Letters are: ";
+  for(size_t i = 0; i < letters.size(); ++i){
+    cout << letters[i] << ", ";
+  }
+  cout << "\n\nThe Symbols are: ";
+  for(size_t i = 0; i < symbols.size(); ++i){
+    cout << symbols[i] << ", ";
+  }
+  cout << endl;
+  dataFile.close();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------
+//input.txt
+
+input.txt
+ Created on: May 15, 2020
+     Author: LPage
+     dnsjlgfhdjl894569486^#@%@%&^
