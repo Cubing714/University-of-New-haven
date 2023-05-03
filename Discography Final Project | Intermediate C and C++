@@ -1,0 +1,439 @@
+//main.cpp
+
+/*Programming Project 2: Hash - Controller Program
+ * Author: Eric Garcia
+ * Date Created: 9 March 2023 */
+
+//Inclusion of header file and standard namespace
+#include "discography.hpp"
+using namespace std;
+
+// Prototypes of functions defined in main-----------------------------
+void readToHash(vector<Record> hashTable[]);
+int chooseMenu(string menu, vector<Record> hashtable[]);
+
+
+int main() {
+  //Implementation of welcome() function
+  welcome("Welcome to Records by Kyle Mather, Eric Garcia, and Peter Cafaro!");
+
+  //Definition of menu to be used in menu() function
+  string menu = "\n1. Print records\n2. Find record\n3. Add record\n4. Delete record\n5. Check date\n6. Play a track\n7. Rate a track\nChoose -1 to exit\n";
+  int choice = -1;
+
+  //Definition of vector to contain all records used in program
+  vector<Record> hashTable[HASH_SIZE];
+  vector<Record> records;
+
+  //Reading from data.txt into vector defined above
+  readToHash(hashTable);
+  //Menu allows user to choose what to do with the vector of records
+  chooseMenu(menu, hashTable);
+
+  bye();
+
+  //exit statement
+  return -1;
+}
+
+/*readToHash() reads from data.txt into hash table defined in main
+* parameter: vector defined in main
+* return: void */
+void readToHash(vector<Record> hashTable[]) {
+  ifstream dataFile(INF);
+
+  string ti;
+  string at;
+  string mt;
+  int dy;
+  int yr;
+  int rt;
+  int np;
+
+  string day;
+  string year;
+  string rating;
+  string numOfPlays;
+  
+  for (size_t i = 1; !dataFile.eof(); i += 5) {
+    for(size_t j = 1; j <= 7; ++j){
+      string n;
+       
+      getline(dataFile, n);
+        if(j == 1){
+          ti = n;
+        }else if(j == 2){
+          at = n;
+        }else if(j == 3){
+          mt = n;
+        }else if(j == 4){
+          day = n;
+        }else if(j == 5){
+          year = n;
+        }else if(j == 6){
+          rating = n;
+        }else if(j == 7){
+          numOfPlays = n;
+        }
+    }
+    dy = stoi(day);
+    yr = stoi(year);
+    rt = stoi(rating);
+    np = stoi(numOfPlays);
+
+    int idx = hashIdx(mt, dy, yr);
+    hashTable[idx].push_back(Record(ti, at, mt, dy, yr, rt, np));
+  }
+  dataFile.close();
+}
+
+//discrography.hpp-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+/*Programming Project 2: Hash - Header File
+* Authors: Eric Garcia and Kyle Mather
+* Date Created: 9 March 2023 */
+
+//Inclusion of all necessary libraries, data files, and namespaces
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <vector>
+#include <fstream>
+#define INF "data.txt"
+#define OUTF "data.txt"
+#define HASH_SIZE 73
+using namespace std;
+
+//Definition of record class
+class Record {
+  private:
+    //variables associated with each object of record class
+    string title; 
+    string artist; 
+    string month;
+    int day;
+    int year;
+    int rating;
+    int numOfPlays;
+
+  public:
+    //Constructors
+    Record(string ti, string at, string mt, int dy, int yr, int rt, int np);
+    Record() = default;
+
+    //Function prototypes directly associated with record class
+    void toString() const;
+    string toFile();
+    void likeOrDislike();
+    void play();
+    string getTitle(){return title;};
+    int getDay(){return day;};
+    int getYear(){return year;};
+};
+
+//Function prototypes not directly associated with record class
+void welcome(string m);
+int chooseMenu(string menu, vector<Record> hashtable[]);
+int findFirstIndex(vector<Record> hashTable[], string title);
+int findSecondIndex(vector<Record> hashTable[], string title);
+void addRecord(vector<Record> hashTable[]);
+void deleteRecord(vector<Record> hashTable[]);
+void readToHash(vector<Record> hashTable[]);
+void hashToString(vector<Record> hashtable[]);
+void hashToFile(vector<Record> hashTable[]);
+int hashIdx(string month, int day, int year);
+void bye();
+
+//discography.cpp------------------------------------------------------------------------------------------------------------------------------------------------------
+
+/*Programming Project 2:  Hash - Source Code File
+ * Authors: Eric Garcia and Kyle Mather
+ * Date Created: 9 March 2023 */
+
+#include "discography.hpp"
+
+using namespace std;
+
+// Constructor---------------------------------------------------------------------
+Record::Record(string ti, string at, string mt, int dy, int yr, int rt, int np) {
+  title = ti;
+  artist = at;
+  month = mt;
+  day = dy;
+  year = yr;
+  rating = rt;
+  numOfPlays = np;
+}
+
+/*toString() formats data elements in object of Record class as a string
+* parameters: none
+* return: void */
+void Record::toString() const {
+  cout << "\nTitle: "<< title << endl
+       << "By: " << artist << endl
+       << "Released: " 
+       <<  month + " " + to_string(day) + ", " + to_string(year) << endl
+       << "Rating: " << rating << endl
+       << "Number of Plays: " << numOfPlays << endl
+       << endl;
+}
+
+/*toFile() formats all elements of Record object into a single output for output file
+* parameters: none
+* return: string for output file */
+string Record::toFile() {
+  return title + "\n" + artist + "\n" + month + "\n" + to_string(day) + '\n' + to_string(year) + '\n'+ to_string(rating) + "\n" + to_string(numOfPlays);
+}
+
+/*likeOrDislike() allows a user to change the rating of a certain object in record class
+* parameters: none
+* return: void */
+void Record::likeOrDislike() {
+  int r = rating;
+  cout << "\n1 to like the track, 2 to dislike the track: " << endl;
+  cin >> rating;
+  if (rating == 1) {
+    r++;
+  } else if (rating == 2) {
+    r--;
+  } else {
+    cout << "Invalid input" << endl;
+  }
+  cout << "The rating is now: " << r << endl;
+}
+
+/*play() increments a user's chosen object of record class' number of plays by one
+* parameters: none
+* return: void */
+void Record::play() {
+  int n = numOfPlays;
+  n++;
+  cout << "The number of plays is now: " << n << endl;
+}
+
+
+/*welcome() invites used into program by printing welcome message to console
+* parameters: message to be printed
+* return: void */
+void welcome(string m) { cout << m << endl; }
+
+/*hashToString() similar to toString() but works with vector of records opposed to single record itself
+* parameters: vector to be printed
+* return: void */
+void hashToString(vector<Record> hashTable[]){
+  cout << "\n";
+  int num = 1;
+  for(size_t i = 0; i < HASH_SIZE; ++i){
+    for(size_t j = 0; j < hashTable[i].size(); ++j){
+      cout << num << ". " << hashTable[i][j].getTitle() << endl;
+      num++;
+    }
+  }
+}
+
+/*findFirstIndex() uses nested for loop to traverse through 2D array
+* Checks at each index if title at index is equal to input title
+* If true, returns first index of title
+* parameters: vector of records and title to be found in vector
+* return: int first index of record in vector */
+int findFirstIndex(vector<Record> hashTable[], string title) {
+  for(size_t i = 0; i < HASH_SIZE ; ++i){
+    for (size_t j = 0; j < hashTable[i].size(); ++i) {
+      if (hashTable[i][j].getTitle() == title) {
+        return i;
+      }
+    }
+  }
+  return -1;
+}
+
+/* findSecondIndex() uses same for loop and if statement, but returns second index
+* parameters: vector of records and title to be found in vector
+* return: int second index of record in vector */
+int findSecondIndex(vector<Record> hashTable[], string title){
+  for(size_t i = 0; i < HASH_SIZE ; ++i){
+    for (size_t j = 0; j < hashTable[i].size(); ++i) {
+      if (hashTable[i][j].getTitle() == title) {
+        return j;
+      }
+    }
+  }
+  return -1;
+}
+
+/*addRecord() allows user to input info for a record and it will be added to vector of records
+* parameters: vector of records
+* return: void */
+void addRecord(vector<Record> hashTable[]) {
+  string ti;
+  string at;
+  string mt;
+  int dy;
+  int yr;
+  int rt;
+  int np;
+  
+  cout << "Title: ";
+  cin >> ti;
+  cout << "Artist: ";
+  cin >> at;
+  cin.ignore(100, '\n');
+  cout << "Date Released \n"
+       << "Month: ";
+  cin >> mt;
+  cout << "Day: ";
+  cin >> dy;
+  cout << "Year: ";
+  cin >> yr;
+  cin.ignore(100, '\n');
+  cout << "Rating: ";
+  cin >> rt;
+  cout << "Number of plays: ";
+  cin >> np;
+
+  Record addRec = {ti, at, mt, dy, yr, rt, np};
+  int idx = hashIdx(mt, dy, yr);
+  hashTable[idx].push_back(addRec);
+}
+
+/*deleteRecord() allows user to input title of record and it will be erased from vector of records 
+* parameters: vector of records
+* return: void */
+void deleteRecord(vector<Record> hashTable[]) {
+  string title;
+  cin.clear();
+  cin.ignore(100, '\n');
+  cout << "\nPlease enter the title of the record you would like to remove: "<< endl;
+  getline(cin, title, '\n');
+  int pos1 = findFirstIndex(hashTable, title);
+  int pos2 = findSecondIndex(hashTable, title);
+  if(pos1 == -1){
+      cout << "Inputted record could not be found." << endl;
+  }else{
+    hashTable[pos1].erase(hashTable[pos1].begin() + pos2);
+    cout << "\n" << title << " was deleted" << endl;
+  }
+}
+
+/*hashToFile() opens output stream and prints array of vector of records to output file
+* parameters: vector of records
+* return: void */
+void hashToFile(vector<Record> hashTable[]) {
+  ofstream dataFile;
+  //For loop search through hashes to find the amount of vectors that have object. Use hashTable[i].size() for this
+  //If statement 
+  dataFile.open(OUTF, ofstream::out | ofstream::trunc);
+  int n = 1;
+  for (size_t i = 0; i < HASH_SIZE; ++i) {
+    for(size_t j = 0; j < hashTable[i].size(); ++j){
+      if(n == 1){
+        n--;
+        dataFile << hashTable[i][j].toFile();
+      }else{
+        dataFile << endl << hashTable[i][j].toFile();
+      }
+    }
+  }
+  dataFile.close();
+}
+
+/*checkDate() allows user to input a guess for when a record was released and function will check that against actual date
+* parameters: vector of records
+* return: void */
+void checkDate(vector<Record> hashTable[]) {
+  string title;
+  int guess;
+  cin.ignore(256, '\n');
+  cout << "\nPlease enter the record you would like to guess: ";
+  getline(cin, title, '\n');
+  int pos1 = findFirstIndex(hashTable, title);
+  int pos2 = findSecondIndex(hashTable, title);
+  cout << "\nEnter the year for which you believe " << title << " was released: ";
+  cin >> guess;
+  if (hashTable[pos1][pos2].getYear() == guess) {
+    cout << "Correct!";
+  } else {
+    cout << "Incorrect.";
+  }
+}
+
+/*hashIdx() accepts a date which is used to calculate the vector index
+* parameters: string for month and ints for day and year of target date
+* return: vector index */
+int hashIdx(string month, int day, int year){
+  unsigned long int key = (year * year) + day;
+  unsigned long int tempKey = 0;
+  int mask = 0x1F;
+
+
+  for(size_t i = month.size(); i > 0; --i){
+    tempKey = (key & mask);
+    tempKey = tempKey << 59;
+    key = key >> 5;
+    key = (key | tempKey);
+    key = ((int)month[i - 1] ^ key);
+  }
+  int index = key % HASH_SIZE;
+  return index;
+}
+
+/*chooseMenu() allows user to choose action from menu and functions above will run accordingly 
+* parameters: string of choices for user to choose from, vector of records
+* return: int choice */
+int chooseMenu(string menu, vector<Record> hashTable[]) {
+  bool cont = true;
+  int input = 0;
+  while (cont == true) {
+    cout << menu;
+    cin >> input;
+
+    if (input == 1) {
+      hashToString(hashTable);
+    } else if (input == 2) {
+      string title;
+      cin.ignore(256, '\n');
+      cout << "\nPlease input the record you would like to find: ";
+      getline(cin, title);
+      int pos1 = findFirstIndex(hashTable, title);
+      int pos2 = findSecondIndex(hashTable, title);
+      if(pos1 == -1){
+        cout << "Input record could not be found." << endl;
+      }else{
+        hashTable[pos1][pos2].toString();
+      }
+    } else if (input == 3) {
+      addRecord(hashTable);
+    } else if (input == 4) {
+      deleteRecord(hashTable);
+    } else if (input == 5) {
+      checkDate(hashTable);
+    } else if (input == 6) {
+      string title;
+      cin.ignore(256, '\n');
+      cout << "Which record would you like to play? \n";
+      getline(cin, title);
+      int pos1 = findFirstIndex(hashTable, title);
+      int pos2 = findSecondIndex(hashTable, title);
+      hashTable[pos1][pos2].play();
+    } else if (input == 7) {
+      string title;
+      cin.ignore(256, '\n');
+      cout << "Which record would you like to rate? \n";
+      getline(cin, title);
+      int pos1 = findFirstIndex(hashTable, title);
+      int pos2 = findSecondIndex(hashTable, title);
+      hashTable[pos1][pos2].likeOrDislike();
+    } else if (input == -1) {
+      hashToFile(hashTable);
+      cont = false;
+    } else {
+      cout << "\nInput not accepted. Please try again\n" << endl;
+    }
+  }
+  return input;
+}
+
+/*bye() gives salutations to used
+* parameters: none
+* return: void */
+void bye() { cout << "\nBye!" << endl; }
